@@ -16,8 +16,6 @@ out vec4 projectionCoord;
 out vec3 eyeDir;
 out vec3 oNormal;
 
-out vec4 uv;
-
 // Vertex program for fresnel reflections / refractions
 void main()
 {
@@ -35,7 +33,5 @@ void main()
 
   eyeDir = normalize(position.xyz - eyePosition);
   oNormal = normal.rgb;
-
-  uv = uv0;
 }
 

@@ -241,14 +241,7 @@ namespace asv
         this->data->trackedCamera->getDerivedOrientation());
 
     this->data->renderTarget->update();
-    this->data->renderTarget->writeContentsToFile("asdf.png");
-
-//    this->data->camera->getViewport()->getTarget()->update();
-//    this->data->camera->getViewport()->getTarget()->writeContentsToFile("c.png");
-
-
-//    this->data->trackedCamera->getViewport()->getTarget()->update();
-//    this->data->trackedCamera->getViewport()->getTarget()->writeContentsToFile("start.png");
+    // this->data->renderTarget->writeContentsToFile("reflection.png");
   }
 
   void WavefieldVisualPlugin::preRenderTargetUpdate(

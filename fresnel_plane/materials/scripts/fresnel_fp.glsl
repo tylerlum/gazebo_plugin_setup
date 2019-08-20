@@ -14,10 +14,7 @@ in vec4 projectionCoord;
 in vec3 eyeDir;
 in vec3 oNormal;
 
-in vec4 uv;
-
 out vec4 fragColour;
-
 
 // Fragment program for distorting a texture using a 3D noise texture
 void main()
@@ -34,14 +31,11 @@ void main()
   float fresnel = fresnelBias + fresnelScale * pow(1.0 + dot(eyeDir, oNormal), fresnelPower);
 
   // Reflection / refraction
-  // vec4 reflectionColour = texture(reflectMap, final);
-  vec4 reflectionColour = texture(reflectMap, uv.xy);
+  vec4 reflectionColour = texture(reflectMap, final);
   vec4 refractionColour = texture(refractMap, final) + tintColour;
 
 
   // Final colour
-
-  // fragColour = mix(refractionColour, reflectionColour, fresnel);
-  fragColour = reflectionColour;
+  fragColour = mix(refractionColour, reflectionColour, fresnel);
 }
 
