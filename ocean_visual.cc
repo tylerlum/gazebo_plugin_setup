@@ -65,7 +65,8 @@ namespace asv
     public: Ogre::Camera *camera;
     public: Ogre::SceneNode *planeNode;
     public: gazebo::rendering::ScenePtr scene;
-    public: Ogre::Plane plane;
+    public: Ogre::Plane planeUp;
+    public: Ogre::Plane planeDown;
     public: Ogre::Entity* planeEntity;
     public: Ogre::TexturePtr rttReflectionTexture;
     public: Ogre::TexturePtr rttRefractionTexture;
@@ -132,27 +133,10 @@ namespace asv
     }
 
     // Create Plane for reflection texture
-    // this->data->plane = new Ogre::MovablePlane("Plane");
-    // this->data->plane->d = 0;
-    // this->data->plane->normal = Ogre::Vector3::UNIT_Z;
-    this->data->plane = Ogre::Plane(Ogre::Vector3::UNIT_Z, 0);
-    // Ogre::MeshManager::getSingleton().createPlane(
-    //   "PlaneMesh2",
-    //   Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-    //   this->data->plane,
-    //   512, 512, 1, 1,
-    //   true,
-    //   1, 1, 1,
-    //   Ogre::Vector3::UNIT_Y);
-    // this->data->planeEntity = this->data->scene->OgreSceneManager()->
-    //     createEntity("PlaneMesh", "PlaneMesh2");
-    // (this->data->planeNode = this->data->scene->OgreSceneManager()->
-    //  getRootSceneNode()->createChildSceneNode());
-    // this->data->planeNode->attachObject(this->data->planeEntity);
-    // this->data->planeNode->attachObject(this->data->plane);
+    this->data->planeUp = Ogre::Plane(Ogre::Vector3::UNIT_Z, 0);
+    this->data->planeDown = Ogre::Plane(-Ogre::Vector3::UNIT_Z, 0);
 
-    // QUESTION: Create render texture, if I give it the same name as
-    // the texture in scripts/waves.material, it would not work for some reason
+    // Create reflection texture
     this->data->rttReflectionTexture =
       Ogre::TextureManager::getSingleton().createManual(
         this->data->visual->Name() + "_reflection",
@@ -163,6 +147,7 @@ namespace asv
         Ogre::PF_R8G8B8,
         Ogre::TU_RENDERTARGET);
 
+    // Create refraction texture
     this->data->rttRefractionTexture =
       Ogre::TextureManager::getSingleton().createManual(
         this->data->visual->Name() + "_refraction",
@@ -172,7 +157,6 @@ namespace asv
         0,
         Ogre::PF_R8G8B8,
         Ogre::TU_RENDERTARGET);
-
 
     Ogre::ColourValue bgColor =
         rendering::Conversions::Convert(this->data->scene->BackgroundColor());
@@ -215,7 +199,6 @@ namespace asv
     refractTex->setTexture(this->data->rttRefractionTexture);
 
     // Camera reflection and clip plane setup
-    // this->data->camera->enableCustomNearClipPlane(this->data->plane);
     this->data->planeEntity->setMaterialName(mat->getName());
 
     // Bind the update method to ConnectPreRender events
@@ -249,13 +232,15 @@ namespace asv
     // reflection
     if (rte.source == this->data->renderTarget)
     {
-      this->data->camera->enableReflection(this->data->plane);
+      this->data->camera->enableReflection(this->data->planeUp);
+      this->data->camera->enableCustomNearClipPlane(this->data->planeUp);
       // TODO hide visuals below plane
     }
     // refraction
     else
     {
       this->data->visual->SetVisible(false);
+      this->data->camera->enableCustomNearClipPlane(this->data->planeDown);
       // TODO hide visuals above plane
     }
   }
@@ -275,11 +260,13 @@ namespace asv
     if (rte.source == this->data->renderTarget)
     {
       this->data->camera->disableReflection();
+      this->data->camera->disableCustomNearClipPlane();
       // TODO hide visuals below plane
     }
     // refraction
     else
     {
+      this->data->camera->disableCustomNearClipPlane();
       // TODO hide visuals above plane
     }
   }
