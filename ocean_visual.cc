@@ -182,11 +182,10 @@ namespace asv
         Ogre::PF_R8G8B8,
         Ogre::TU_RENDERTARGET);
 
+    // Setup render texture
     this->data->renderTarget =
         this->data->rttReflectionTexture->getBuffer()->getRenderTarget();
     this->data->renderTarget->setAutoUpdated(false);
-
-    // Setup render texture
     Ogre::Viewport *vp = this->data->renderTarget->addViewport(this->data->camera);
     vp->setClearEveryFrame(true);
     vp->setOverlaysEnabled(false);
@@ -242,6 +241,7 @@ namespace asv
 
     this->data->renderTarget->update();
     // this->data->renderTarget->writeContentsToFile("reflection.png");
+    this->data->refractionRt->update();
   }
 
   void WavefieldVisualPlugin::preRenderTargetUpdate(
